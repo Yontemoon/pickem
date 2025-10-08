@@ -1,7 +1,7 @@
 [build]
   base = "."
   command = "vite build"
-  dir = "dist/client"
+  dir = "dist"
 [dev]
   command = "vite dev"
   port = 3000
