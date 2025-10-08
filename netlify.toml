@@ -4,5 +4,4 @@
   publish = "dist"
 [dev]
   command = "pnpm dev"
-  # Port for local development
   port = 3000
