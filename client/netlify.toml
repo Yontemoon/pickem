@@ -1,7 +1,7 @@
 [build]
-  base = "."
-  command = "vite build && tsc"
-  dir = "dist"
+  base = "client"
+  command = "npm run build"
+  publish = "client/dist"
 [dev]
   command = "vite dev"
   port = 3000
