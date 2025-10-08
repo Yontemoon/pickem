@@ -1,6 +1,6 @@
 [build]
   base = "."
-  command = "vite build"
+  command = "vite build && tsc"
   dir = "dist"
 [dev]
   command = "vite dev"
