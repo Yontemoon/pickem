@@ -74,9 +74,17 @@ const getEventData = async (eventData, browser) => {
   )
 
   const events = await eventPage.$$eval(
-    '[data-event-view-toggle-target="list"]',
-    (element) => {
-      return element.length
+    '[class="border-b border-dotted border-tap_6"][data-controller="table-row-background"]',
+    (elements) => {
+      const data = elements.map((element) => {
+        const container = element.querySelector(
+          '[class="div group flex items:start justify-center gap-0.5 md:gap-0"]'
+        )
+        const children = container.children
+        return children.length
+      })
+
+      return data
     }
   )
 
