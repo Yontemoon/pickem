@@ -116,11 +116,15 @@ const getEventData = async (eventData, browser) => {
     }
   )
 
+  const fighters = events.flatMap((event) => [event.fighter1, event.fighter2])
+  console.log(fighters)
+
   await delay(1000)
   await eventPage.close()
   console.groupCollapsed(eventData.title)
   console.log("Date of Event:", date)
-  console.log("Number of Schedule bouts:", events)
+  console.log("Scheduled Bouts details:", events)
+
   console.groupEnd()
 }
 

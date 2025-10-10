@@ -1,3 +1,10 @@
+import dotenv from "dotenv"
+
+const dotenvResults = dotenv.config()
+if (dotenvResults.error) {
+  throw new dotenvResults.error()
+}
+
 const delay = (time) => {
   return new Promise(function (resolve) {
     setTimeout(resolve, time)
