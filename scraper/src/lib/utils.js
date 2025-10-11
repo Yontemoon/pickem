@@ -12,16 +12,26 @@ const delay = (time) => {
 }
 
 /**
+ * @typedef {Object} FighterDetails
+ * @property {number} id
+ * @property {string} name
+ * @property {string} href
+ * @property {string | null} imageSrc
+ * @property {string} winLos
+ * @property {string} flagSrc
+ *
+ */
+
+/**
  *
  * @param {Element} element
- * @returns {Promise<{name: string, href: string, imageSrc: string | null}>}
+ * @returns {Promise<FighterDetails>}
  */
 const getFighterDetails = async (element) => {
   const details = await element.evaluate((el) => {
     const anchor = el.querySelector("a")
     const name = anchor?.textContent || ""
     const href = anchor?.href || ""
-    const id = href.split("/fighters/")[1].split("-")[0]
     const ratio = el
       .querySelector('[class^="text-[15px] md:text-xs"]')
       .textContent.trim()
@@ -32,6 +42,10 @@ const getFighterDetails = async (element) => {
     const imageSrc = el
       .querySelector('[id^="fighterBoutImage"]')
       .querySelector("img").src
+
+    const id = imageSrc
+      .split("https://images.tapology.com/headshot_images/")[1]
+      .split("/")[0]
 
     return {
       id: id ? Number(id) : null,
