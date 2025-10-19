@@ -1,13 +1,23 @@
-import { createFileRoute } from '@tanstack/react-router'
-import logo from '../logo.svg'
+import { createFileRoute } from "@tanstack/react-router"
+import logo from "../logo.svg"
 
-export const Route = createFileRoute('/')({
+export const Route = createFileRoute("/")({
   component: App,
+  async loader() {
+    const response = await fetch(
+      `${import.meta.env.VITE_API_URL}/events/upcoming`
+    )
+    const data = await response.json()
+    console.log(data)
+    return data
+  },
 })
 
 function App() {
+  const data = Route.useLoaderData()
   return (
     <div className="text-center">
+      {JSON.stringify(data)}
       <header className="min-h-screen flex flex-col items-center justify-center bg-[#282c34] text-white text-[calc(10px+2vmin)]">
         <img
           src={logo}
