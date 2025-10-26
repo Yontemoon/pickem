@@ -85,17 +85,17 @@ async function main() {
       eventsData.map((event) => getEventData(event, browser))
     )
 
-    let fightersScheduled = 0
-    data.forEach((element) => {
-      element.forEach((event) => {
-        console.group(event.details.fightId)
-        console.log(`${event.fighter1.id}: ${event.fighter1.name}`)
-        console.log(`${event.fighter2.id}: ${event.fighter2.name}`)
-        console.groupEnd()
-        fightersScheduled++
-      })
-    })
-    console.log(`Number of bouts scheduled:`, fightersScheduled)
+    // let fightersScheduled = 0
+    // data.forEach((element) => {
+    //   element.forEach((event) => {
+    //     console.group(event.details.fightId)
+    //     console.log(`${event.fighter1.id}: ${event.fighter1.name}`)
+    //     console.log(`${event.fighter2.id}: ${event.fighter2.name}`)
+    //     console.groupEnd()
+    //     fightersScheduled++
+    //   })
+    // })
+    // console.log(`Number of bouts scheduled:`, fightersScheduled)
 
     data.forEach((event) => {
       event.forEach(async (fight) => {
