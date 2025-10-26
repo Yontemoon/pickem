@@ -1,6 +1,9 @@
 import dotenv from "dotenv"
+import { DateTime } from "luxon"
 
-const dotenvResults = dotenv.config()
+const dotenvResults = dotenv.config({
+  quiet: true,
+})
 if (dotenvResults.error) {
   throw new dotenvResults.error()
 }
@@ -59,4 +62,22 @@ const getFighterDetails = async (element) => {
   return details
 }
 
-export { delay, getFighterDetails }
+const convertStringToTimestamptz = (rawString) => {
+  // Clean up irregular spaces
+  const cleaned = rawString.replace(/\s+/g, " ").trim()
+  // Remove the day name
+  const noDay = cleaned.replace(/^[A-Za-z]+,\s*/, "")
+  // Replace timezone abbreviation with a real zone
+  const withZone = noDay.replace(/\sET$/, " America/New_York")
+
+  // Now parse
+  const dt = DateTime.fromFormat(withZone, "MMMM d, h:mm a z", {
+    zone: "America/New_York",
+  })
+
+  // Convert to Postgres-friendly timestamptz ISO string
+  const timestamp = dt.toISO() // or dt.toISO({ suppressMilliseconds: true })
+  return timestamp
+}
+
+export { delay, getFighterDetails, convertStringToTimestamptz }

@@ -1,11 +1,22 @@
 import puppeteer, { Browser } from "puppeteer"
 import { TAPOLOGY_URL, TIMEOUT } from "./lib/constants.js"
-import { delay, getFighterDetails } from "./lib/utils.js"
+import {
+  convertStringToTimestamptz,
+  delay,
+  getFighterDetails,
+} from "./lib/utils.js"
 import { insertFighter, insertEvent } from "./lib/supabase.js"
 
 async function main() {
   try {
-    const browser = await puppeteer.launch()
+    const browser = await puppeteer.launch({
+      headless: true,
+      args: [
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
+        "--disable-dev-shm-usage",
+      ],
+    })
     const page = await browser.newPage()
     console.log("Going into Tapology...")
     await page.goto(`${TAPOLOGY_URL}/fightcenter`, {
@@ -32,20 +43,40 @@ async function main() {
         elements.map((el) => {
           const id = el.id.replace("preview", "")
           const aTag = el.querySelector("a")
-          const title = aTag.textContent
+          const event_title = aTag.textContent
+          const date = el
+            .querySelector("span[class='hidden md:inline']")
+            .textContent.trim()
           return {
             id: id,
-            title: title,
+            event_title: event_title,
             href: aTag.href,
+            date: date,
           }
         })
     )
     console.group(`Found ${eventsData.length} bouts`)
 
     eventsData.forEach(async (event) => {
-      console.group(`Inserting event data for: ${event.title}`)
-      console.log("ID: ", event.id)
-      console.groupEnd()
+      try {
+        const timeStamp = convertStringToTimestamptz(event.date)
+        console.group(`Inserting event data for: ${event.event_title}`)
+        console.log("ID: ", event.id)
+        console.log("Tag", event.href)
+        console.log("Date", event.date)
+        console.groupEnd()
+        const { error } = await insertEvent({
+          date: timeStamp,
+          id: event.id,
+          event_title: event.event_title,
+        })
+
+        if (error) {
+          throw new Error(error)
+        }
+      } catch (error) {
+        console.error(error)
+      }
     })
 
     const data = await Promise.all(

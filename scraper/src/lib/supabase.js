@@ -32,20 +32,21 @@ const insertFighter = async ({
     }
 
     console.log(`Successfully inserted ${id}: ${name}`)
+    return { error: null }
   } catch (error) {
     console.error(error)
+    return { error: error }
   }
 }
 
-const insertFight = async () => {}
+// const insertFight = async () => {}
 
-const insertEvent = async ({ id, event_title, date, fights }) => {
+const insertEvent = async ({ id, event_title, date }) => {
   try {
     const { error } = await supabase.from("events").upsert({
       id,
       event_title,
       date,
-      fights,
     })
 
     if (error) {
@@ -53,10 +54,20 @@ const insertEvent = async ({ id, event_title, date, fights }) => {
       console.error(error)
       throw new Error(error.message)
     }
+    return { error: null }
   } catch (error) {
     console.error(error)
+    if (typeof error === "string") {
+      return {
+        error: error,
+      }
+    } else {
+      return {
+        error: "Unexpected error occured inserting event",
+      }
+    }
   }
 }
 
 export default supabase
-export { insertFighter, insertFight, insertEvent }
+export { insertFighter, insertEvent }
