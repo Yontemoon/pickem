@@ -5,7 +5,7 @@ const dotenvResults = dotenv.config({
   quiet: true,
 })
 if (dotenvResults.error) {
-  throw new dotenvResults.error()
+  throw dotenvResults.error
 }
 
 const delay = (time) => {
