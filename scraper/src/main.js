@@ -214,7 +214,7 @@ const getEventData = async (eventData, browser) => {
   await eventPage.close()
   console.groupCollapsed(eventData.title)
   console.log("Date of Event:", date)
-  console.log("Scheduled Bouts details:", eventDetails)
+  console.log("Number of fights: ", eventDetails.length)
   console.groupEnd()
   return eventDetails
 }
