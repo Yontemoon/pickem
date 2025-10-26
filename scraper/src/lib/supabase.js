@@ -31,7 +31,6 @@ const insertFighter = async ({
       throw new Error(error.message)
     }
 
-    console.log(`Successfully inserted ${id}: ${name}`)
     return { error: null }
   } catch (error) {
     console.error(error)

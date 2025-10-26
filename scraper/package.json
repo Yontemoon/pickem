@@ -14,9 +14,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@sparticuz/chromium": "^141.0.0",
     "@supabase/supabase-js": "^2.75.0",
     "dotenv": "^17.2.3",
-    "luxon": "^3.7.2",
-    "puppeteer": "^24.23.0"
+    "luxon": "^3.7.2"
   }
 }
