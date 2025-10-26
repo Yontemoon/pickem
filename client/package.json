@@ -4,8 +4,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite --port 3000",
-    "build": "vite build && tsc",
-    "start": "vite preview",
+    "build": "tsr && vite build",
+    "start": "vite preview --port ${PORT:-3000} --host",
     "test": "vitest run"
   },
   "engines": {
@@ -41,6 +41,7 @@
     "zod": "^4.1.11"
   },
   "devDependencies": {
+    "@tanstack/router-cli": "^1.133.29",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/react": "^16.2.0",
     "@types/node": "^22.10.2",

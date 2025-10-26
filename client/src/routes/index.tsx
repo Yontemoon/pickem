@@ -23,9 +23,10 @@ export const Route = createFileRoute("/")({
 })
 
 function App() {
-  const { data } = Route.useLoaderData()
+  const { data, error } = Route.useLoaderData()
   return (
     <div className="text-center">
+      {error && <div>{JSON.stringify(error)}</div>}
       {data &&
         data.map((d) => {
           return <div>{d.event_title}</div>
