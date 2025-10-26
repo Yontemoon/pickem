@@ -3,11 +3,9 @@ import viteReact from "@vitejs/plugin-react"
 import tailwindcss from "@tailwindcss/vite"
 import tanstackRouter from "@tanstack/router-plugin/vite"
 import { resolve } from "node:path"
-// import netlify from "@netlify/vite-plugin-tanstack-start"
 
 export default defineConfig({
   plugins: [
-    // netlify(),
     tanstackRouter({ autoCodeSplitting: true }),
     viteReact(),
     tailwindcss(),
@@ -16,5 +14,8 @@ export default defineConfig({
     alias: {
       "@": resolve(__dirname, "./src"),
     },
+  },
+  preview: {
+    allowedHosts: [".railway.app"],
   },
 })
