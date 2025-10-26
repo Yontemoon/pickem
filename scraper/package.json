@@ -4,6 +4,9 @@
   "type": "module",
   "description": "",
   "main": "src/main.js",
+  "engines": {
+    "node": "22.20.0"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "main": "node src/main.js"
