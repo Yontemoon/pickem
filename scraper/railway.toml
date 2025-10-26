@@ -1,6 +1,6 @@
 [build]
 builder = "NIXPACKS"
-buildCommand = "pnpm install"
+buildCommand = "npx puppeteer browsers install chrome && pnpm install"
 
 [deploy]
 startCommand = "pnpm main"
