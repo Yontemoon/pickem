@@ -4,8 +4,12 @@ import { DateTime } from "luxon"
 const dotenvResults = dotenv.config({
   quiet: true,
 })
+console.log(dotenvResults)
 if (dotenvResults.error) {
-  if (process.env.NODE_ENV === "production" && result.error.code === "ENOENT") {
+  if (
+    process.env.NODE_ENV === "production" &&
+    dotenvResults.error.code === "ENOENT"
+  ) {
     console.info(
       "expected this error because we are in production without a .env file"
     )
