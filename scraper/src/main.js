@@ -138,7 +138,7 @@ async function main() {
 /**
  *
  * @param {{
- * title: string,
+ * event_title: string,
  * href: string}} eventData
  * @param {Browser} browser
  * @returns {Promise<Array<{
@@ -212,7 +212,7 @@ const getEventData = async (eventData, browser) => {
 
   await delay(1000)
   await eventPage.close()
-  console.groupCollapsed(eventData.title)
+  console.groupCollapsed(eventData.event_title)
   console.log("Date of Event:", date)
   console.log("Number of fights: ", eventDetails.length)
   console.groupEnd()
