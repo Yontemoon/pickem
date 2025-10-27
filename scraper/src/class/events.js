@@ -15,7 +15,6 @@ import { convertStringToTimestamptz } from "../lib/utils.js"
  */
 class Event {
   /**
-   *
    * @param {EventType}
    */
   constructor({ event_title, date, href, id }) {
@@ -23,14 +22,6 @@ class Event {
     this.date = convertStringToTimestamptz(date)
     this.href = href
     this.id = id
-  }
-
-  log() {
-    console.group(`Inserting event data for: ${this.event_title}`)
-    console.log("ID: ", this.id)
-    console.log("Tag", this.href)
-    console.log("Date", this.date)
-    console.groupEnd()
   }
 
   async insert() {
@@ -43,6 +34,12 @@ class Event {
       if (error) {
         throw new Error(error)
       }
+
+      console.group(`Inserting event data for: ${this.event_title}`)
+      console.log("ID: ", this.id)
+      console.log("Tag", this.href)
+      console.log("Date", this.date)
+      console.groupEnd()
     } catch (err) {
       console.error(err)
     }

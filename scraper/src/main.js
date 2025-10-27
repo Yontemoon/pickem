@@ -1,8 +1,8 @@
 import puppeteer, { Browser } from "puppeteer"
 import { TAPOLOGY_URL, TIMEOUT } from "./lib/constants.js"
-import { delay, getFighterDetails } from "./lib/utils.js"
-import { insertFighter } from "./lib/supabase.js"
+import { delay } from "./lib/utils.js"
 import Event from "./class/events.js"
+import Fighter from "./class/fighter.js"
 
 async function main() {
   try {
@@ -56,9 +56,14 @@ async function main() {
     )
     console.group(`Found ${eventsData.length} bouts`)
 
+    if (eventsData.length >= 20) {
+      console.warn("Fitlering did not work...")
+      console.warn("Ending script.")
+      throw Error("Filtering just UFC did not work")
+    }
+
     eventsData.forEach(async (event) => {
       const newEvent = new Event(event)
-      newEvent.log()
       await newEvent.insert()
     })
 
@@ -68,22 +73,11 @@ async function main() {
 
     data.forEach((event) => {
       event.forEach(async (fight) => {
-        await insertFighter({
-          id: fight.fighter1.id,
-          name: fight.fighter1.name,
-          ratio: fight.fighter1.winLos,
-          tapology_flag_src: fight.fighter1.flagSrc,
-          tapology_img_url: fight.fighter1.imageSrc,
-          tapology_link: fight.fighter1.href,
-        })
-        await insertFighter({
-          id: fight.fighter2.id,
-          name: fight.fighter2.name,
-          ratio: fight.fighter2.winLos,
-          tapology_flag_src: fight.fighter2.flagSrc,
-          tapology_img_url: fight.fighter2.imageSrc,
-          tapology_link: fight.fighter2.href,
-        })
+        const figher1 = new Fighter(fight.fighter1)
+        const figher2 = new Fighter(fight.fighter2)
+
+        await figher1.insert()
+        await figher2.insert()
       })
     })
 
@@ -91,6 +85,8 @@ async function main() {
   } catch (error) {
     console.error(error)
   }
+
+  console.log("Script finished! Yay.")
 }
 
 /**
@@ -121,7 +117,6 @@ async function main() {
  */
 const getEventData = async (eventData, browser) => {
   const eventPage = await browser.newPage()
-  await eventPage.exposeFunction("getFighterDetails", getFighterDetails)
   await eventPage.goto(eventData.href, {
     waitUntil: "networkidle2",
     timeout: TIMEOUT,
@@ -137,40 +132,69 @@ const getEventData = async (eventData, browser) => {
 
   const eventDetails = await eventPage.$$eval(
     '[class="border-b border-dotted border-tap_6"][data-controller="table-row-background"]',
-    async (elements) => {
+    (elements) => {
       const results = []
       let boutNum = 0
-      for (let element of elements) {
+
+      for (const element of elements) {
         const container = element.querySelector(
           '[class="div group flex items:start justify-center gap-0.5 md:gap-0"]'
         )
+        if (!container) continue
+
         const children = container.children
         const fighter1Element = children[0]
         const fightDetailElement = children[1]
         const fighter2Element = children[2]
-        const fighter1Details = await window.getFighterDetails(fighter1Element)
-        const fighter2Details = await window.getFighterDetails(fighter2Element)
+
+        const getFighterDetails = (el) => {
+          if (!el) return null
+
+          const anchor = el.querySelector("a")
+          const name = anchor?.textContent?.trim() || ""
+          const href = anchor?.href || ""
+
+          const ratioEl = el.querySelector('[class^="text-[15px] md:text-xs"]')
+          const winLos = ratioEl?.textContent?.trim() || ""
+
+          const flagEl = el.querySelector(
+            'img[class="opacity-70 h-[14px] md:h-[11px] w-[22px] md:w-[17px]"]'
+          )
+          const flagSrc = flagEl?.src || ""
+
+          const imageEl = el.querySelector('[id^="fighterBoutImage"] img')
+          const imageSrc = imageEl?.src || ""
+
+          const idMatch = imageSrc.match(
+            /https:\/\/images\.tapology\.com\/headshot_images\/(\d+)\//
+          )
+          const id = idMatch ? Number(idMatch[1]) : null
+
+          return { id, name, href, imageSrc, winLos, flagSrc }
+        }
+
+        const fighter1Details = getFighterDetails(fighter1Element)
+        const fighter2Details = getFighterDetails(fighter2Element)
         boutNum++
 
-        /**
-         * Get Fight details
-         */
-
-        const weightClass = fightDetailElement.querySelector(
+        // fight details
+        const weightClassEl = fightDetailElement.querySelector(
           '[class="bg-tap_darkgold px-1.5 md:px-1 leading-[23px] text-sm md:text-[13px] text-neutral-50 rounded"]'
         )
-        const fightUrl = fightDetailElement.querySelector("a").href
-        const fightId = fightUrl.split("/bouts/")[1].split("-")[0]
+        const weightClass = weightClassEl?.textContent?.trim() || ""
+
+        const fightAnchor = fightDetailElement.querySelector("a")
+        const fightUrl = fightAnchor?.href || ""
+        const fightIdMatch = fightUrl.match(/\/bouts\/(\d+)-/)
+        const fightId = fightIdMatch ? Number(fightIdMatch[1]) : null
 
         results.push({
           fighter1: fighter1Details,
           fighter2: fighter2Details,
           details: {
-            fightId: fightId ? Number(fightId) : null,
+            fightId,
             boutNumber: boutNum,
-            weightClass: weightClass
-              ? Number(weightClass.textContent.trim())
-              : null,
+            weightClass,
           },
         })
       }

@@ -34,11 +34,12 @@ const insertFighter = async ({
     return { error: null }
   } catch (error) {
     console.error(error)
-    return { error: error }
+    if (typeof error === "string") {
+      return { error: error }
+    }
+    return { error: `Error occured inserting figher ${name}` }
   }
 }
-
-// const insertFight = async () => {}
 
 const insertEvent = async ({ id, event_title, date }) => {
   try {
@@ -62,7 +63,7 @@ const insertEvent = async ({ id, event_title, date }) => {
       }
     } else {
       return {
-        error: "Unexpected error occured inserting event",
+        error: `Unexpected error occured inserting event ${event_title}`,
       }
     }
   }
