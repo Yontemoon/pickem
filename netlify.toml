@@ -1,7 +1,0 @@
-[build]
-  base = "client"
-  command = "pnpm build"
-  publish = "dist"
-[dev]
-  command = "pnpm dev"
-  port = 3000
