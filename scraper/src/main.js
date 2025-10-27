@@ -1,11 +1,8 @@
 import puppeteer, { Browser } from "puppeteer"
 import { TAPOLOGY_URL, TIMEOUT } from "./lib/constants.js"
-import {
-  convertStringToTimestamptz,
-  delay,
-  getFighterDetails,
-} from "./lib/utils.js"
-import { insertFighter, insertEvent } from "./lib/supabase.js"
+import { delay, getFighterDetails } from "./lib/utils.js"
+import { insertFighter } from "./lib/supabase.js"
+import Event from "./class/events.js"
 
 async function main() {
   try {
@@ -60,42 +57,14 @@ async function main() {
     console.group(`Found ${eventsData.length} bouts`)
 
     eventsData.forEach(async (event) => {
-      try {
-        const timeStamp = convertStringToTimestamptz(event.date)
-        console.group(`Inserting event data for: ${event.event_title}`)
-        console.log("ID: ", event.id)
-        console.log("Tag", event.href)
-        console.log("Date", event.date)
-        console.groupEnd()
-        const { error } = await insertEvent({
-          date: timeStamp,
-          id: event.id,
-          event_title: event.event_title,
-        })
-
-        if (error) {
-          throw new Error(error)
-        }
-      } catch (error) {
-        console.error(error)
-      }
+      const newEvent = new Event(event)
+      newEvent.log()
+      await newEvent.insert()
     })
 
     const data = await Promise.all(
       eventsData.map((event) => getEventData(event, browser))
     )
-
-    // let fightersScheduled = 0
-    // data.forEach((element) => {
-    //   element.forEach((event) => {
-    //     console.group(event.details.fightId)
-    //     console.log(`${event.fighter1.id}: ${event.fighter1.name}`)
-    //     console.log(`${event.fighter2.id}: ${event.fighter2.name}`)
-    //     console.groupEnd()
-    //     fightersScheduled++
-    //   })
-    // })
-    // console.log(`Number of bouts scheduled:`, fightersScheduled)
 
     data.forEach((event) => {
       event.forEach(async (fight) => {
