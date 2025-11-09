@@ -8,15 +8,11 @@
   },
   "dependencies": {
     "@hono/node-server": "^1.19.5",
-    "@sparticuz/chromium-min": "141.0.0",
     "@supabase/ssr": "^0.7.0",
     "@supabase/supabase-js": "^2.75.1",
     "@types/luxon": "^3.7.1",
     "dotenv": "^17.2.3",
-    "hono": "^4.9.9",
-    "luxon": "^3.7.2",
-    "puppeteer": "^24.23.0",
-    "puppeteer-core": "^24.23.0"
+    "hono": "^4.9.9"
   },
   "devDependencies": {
     "@types/node": "^20.11.17",
