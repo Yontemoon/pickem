@@ -57,6 +57,11 @@ app.get("/event/:id", async (c) => {
   }
 })
 
+// Picks based on user
+app.get("/picks", async (c) => {})
+
+app.post("/pick")
+
 serve(
   {
     fetch: app.fetch,
