@@ -1,22 +1,12 @@
 import { insertFighter } from "../lib/supabase.js"
 
 /**
- * @typedef {object} FighterType
- * @property {string} id
- * @property {string} name
- * @property {string} href
- * @property {string} imageSrc
- * @property {string} winLos
- * @property {string} flagSrc
- */
-
-/**
  * @class
  */
 
 class Fighter {
   /**
-   * @param {FighterType}
+   * @param {TFighter}
    */
   constructor({ id, name, href, imageSrc, winLos, flagSrc }) {
     this.id = id

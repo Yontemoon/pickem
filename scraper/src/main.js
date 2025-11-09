@@ -1,8 +1,9 @@
-import puppeteer, { Browser } from "puppeteer"
-import { TAPOLOGY_URL, TIMEOUT } from "./lib/constants.js"
+import puppeteer from "puppeteer"
+import { TAPOLOGY_URL } from "./lib/constants.js"
 import { delay } from "./lib/utils.js"
-import Event from "./class/events.js"
+import Event from "./class/event.js"
 import Fighter from "./class/fighter.js"
+import Fight from "./class/fight.js"
 import { scrapeEventData } from "./lib/scrape.js"
 
 async function main() {
@@ -69,36 +70,37 @@ async function main() {
     })
 
     const data = await Promise.all(
-      eventsData.map((event) => scrapeEventData(event, browser))
+      eventsData.map(async (event) => {
+        const scrapeData = await scrapeEventData(event, browser)
+        return { scrapeData: scrapeData, event: event }
+      })
     )
 
-    data.forEach((event) => {
-      event.forEach(async (fight) => {
-        const figher1 = new Fighter(fight.fighter1)
-        const figher2 = new Fighter(fight.fighter2)
+    data.forEach((scrapeData) => {
+      scrapeData.scrapeData.forEach(async (fight) => {
+        const fighter1 = new Fighter(fight.fighter1)
+        const fighter2 = new Fighter(fight.fighter2)
+        await fighter1.insert()
+        await fighter2.insert()
 
-        await figher1.insert()
-        await figher2.insert()
+        const fightClass = new Fight({
+          redFighter: fighter1,
+          blueFighter: fighter2,
+          details: fight.details,
+          event: scrapeData.event,
+        })
+        await fightClass.insert()
       })
     })
 
     await browser.close()
   } catch (error) {
+    console.error("An Unexpected error occured")
     console.error(error)
+    console.error("Ending script.")
   }
 
   console.log("Script finished! Yay.")
 }
-
-/**
- * @typedef {Object} FighterDetails
- * @property {number} id
- * @property {string} name
- * @property {string} href
- * @property {string | null} imageSrc
- * @property {string} winLos
- * @property {string} flagSrc
- *
- */
 
 main()

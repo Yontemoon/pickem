@@ -1,21 +1,9 @@
 import { insertEvent } from "../lib/supabase.js"
 import { convertStringToTimestamptz } from "../lib/utils.js"
 
-/**
- * @typedef {object} EventType
- * @property {string} event_title
- * @property {string} date
- * @property {string} href
- * @property {string} id
- */
-
-/**
- * Represents a Event.
- * @class
- */
 class Event {
   /**
-   * @param {EventType}
+   * @param {TEvent} eventParam
    */
   constructor({ event_title, date, href, id }) {
     this.event_title = event_title
@@ -36,9 +24,7 @@ class Event {
       }
 
       console.group(`Inserting event data for: ${this.event_title}`)
-      console.log("ID: ", this.id)
-      console.log("Tag", this.href)
-      console.log("Date", this.date)
+      console.log(`Date occuring: ${this.date}`)
       console.groupEnd()
     } catch (err) {
       console.error(err)

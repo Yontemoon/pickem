@@ -4,6 +4,8 @@ import { delay } from "./utils.js"
 /**
  *
  * @param {{
+ * id: string,
+ * date: string,
  * event_title: string,
  * href: string}} eventData
  * @param {Browser} browser
@@ -11,6 +13,7 @@ import { delay } from "./utils.js"
  *   fighter1: FighterDetails;
  *   fighter2: FighterDetails;
  *   details: {
+ *
  *     fightId: number | null;
  *     weightClass: number | null;
  *   };
@@ -21,6 +24,13 @@ const scrapeEventData = async (eventData, browser) => {
   await eventPage.goto(eventData.href, {
     waitUntil: "networkidle2",
     timeout: TIMEOUT,
+  })
+
+  eventPage.on("console", async (msg) => {
+    const msgArgs = msg.args()
+    for (let i = 0; i < msgArgs.length; ++i) {
+      console.log(await msgArgs[i].jsonValue())
+    }
   })
 
   const date = await eventPage.$eval(
@@ -46,6 +56,7 @@ const scrapeEventData = async (eventData, browser) => {
         const children = container.children
         const fighter1Element = children[0]
         const fightDetailElement = children[1]
+
         const fighter2Element = children[2]
 
         const getFighterDetails = (el) => {
@@ -76,7 +87,7 @@ const scrapeEventData = async (eventData, browser) => {
 
         const fighter1Details = getFighterDetails(fighter1Element)
         const fighter2Details = getFighterDetails(fighter2Element)
-        boutNum++
+        // boutNum++
 
         // fight details
         const weightClassEl = fightDetailElement.querySelector(
@@ -89,6 +100,7 @@ const scrapeEventData = async (eventData, browser) => {
         const fightIdMatch = fightUrl.match(/\/bouts\/(\d+)-/)
         const fightId = fightIdMatch ? Number(fightIdMatch[1]) : null
 
+        boutNum++
         results.push({
           fighter1: fighter1Details,
           fighter2: fighter2Details,
