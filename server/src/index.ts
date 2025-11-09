@@ -1,7 +1,7 @@
 import { serve } from "@hono/node-server"
 import { Hono } from "hono"
-import { getSupabase, supabaseMiddleware } from "../supabase/supabase.js"
-import scrape from "../scrape/index.js"
+import { getSupabase, supabaseMiddleware } from "../supabase/supabase.ts"
+
 import { cors } from "hono/cors"
 
 const app = new Hono()
@@ -31,12 +31,19 @@ app.get("/events/upcoming", async (c) => {
   }
 })
 
-app.post("/cronjob", async (c) => {
-  await scrape()
-  return c.json({
-    complete: true,
-  })
+app.get("/event/:id", async (c) => {
+  const id = Number(c.req.param("id"))
+  const supabase = getSupabase(c)
+
+  const { data, error } = await supabase
+    .from("fights")
+    .select("*, fight_info(id, corner, fighter(name))")
+    .eq("event_id", id)
+    .order("bout_number")
+
+  return c.json(data)
 })
+
 serve(
   {
     fetch: app.fetch,
