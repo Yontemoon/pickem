@@ -2,10 +2,13 @@ import { serve } from "@hono/node-server"
 import { Hono } from "hono"
 import { getSupabase, supabaseMiddleware } from "../supabase/supabase.js"
 import { cors } from "hono/cors"
+import authRoutes from "./routes/auth.js"
 
 const app = new Hono()
 app.use("*", supabaseMiddleware())
 app.use("*", cors())
+
+app.route("/auth", authRoutes)
 
 app.get("/", (c) => {
   return c.text("Hello Hono!")
@@ -60,7 +63,7 @@ app.get("/event/:id", async (c) => {
 // Picks based on user
 app.get("/picks", async (c) => {})
 
-app.post("/pick")
+app.post("/pick", async (c) => {})
 
 serve(
   {
@@ -71,3 +74,5 @@ serve(
     console.log(`Server is running on http://localhost:${info.port}`)
   }
 )
+
+export default app
