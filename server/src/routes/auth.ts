@@ -1,7 +1,7 @@
 import { Hono } from "hono"
-import app from "../index.js"
 import supabase from "../../lib/supabase.js"
-import { setCookie, getCookie, deleteCookie } from "hono/cookie"
+import { setCookie, deleteCookie } from "hono/cookie"
+import { accepts } from "hono/accepts"
 
 const authRoutes = new Hono()
 

@@ -1,9 +1,26 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute } from "@tanstack/react-router"
+import { Label } from "@/components/ui/label"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
 
-export const Route = createFileRoute('/signup')({
+export const Route = createFileRoute("/signup")({
   component: RouteComponent,
 })
 
 function RouteComponent() {
-  return <div>Hello "/signup"!</div>
+  return (
+    <div>
+      {" "}
+      <form className="space-y-2">
+        <div className="flex-col">
+          <Label>Email</Label>
+          <Input />
+          <Label>Password</Label>
+          <Input />
+        </div>
+
+        <Button>Sign Up</Button>
+      </form>
+    </div>
+  )
 }

@@ -6,7 +6,16 @@ import authRoutes from "./routes/auth.js"
 
 const app = new Hono()
 app.use("*", supabaseMiddleware())
-app.use("*", cors())
+app.use(
+  "*",
+  cors({
+    origin: [
+      "http://localhost:3000",
+      "https://pickem-production.up.railway.app",
+    ],
+    credentials: true,
+  })
+)
 
 app.route("/auth", authRoutes)
 
