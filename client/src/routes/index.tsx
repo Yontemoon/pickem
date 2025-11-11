@@ -78,7 +78,9 @@ function App() {
           {eventData?.map((event) => {
             return (
               <div key={event.id} className="grid grid-cols-3 space-y-2">
-                <Button>{event.fight_info[0].fighter.name}</Button>
+                <Button variant={"secondary"}>
+                  {event.fight_info[0].fighter.name}
+                </Button>
                 <div>{event.bout_number}</div>
                 <Button>{event.fight_info[1].fighter.name}</Button>
               </div>
