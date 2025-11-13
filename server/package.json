@@ -4,7 +4,8 @@
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
-    "start": "node dist/src/index.js"
+    "start": "node dist/src/index.js",
+    "supabase": "npx supabase gen types typescript --project-id xfulyxjnzufvecxhcenx --schema public > supabase/database.types.ts"
   },
   "dependencies": {
     "@hono/node-server": "^1.19.5",

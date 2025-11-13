@@ -2,6 +2,7 @@ import { Hono } from "hono"
 import supabase from "../../lib/supabase.js"
 import { setCookie, deleteCookie } from "hono/cookie"
 import { accepts } from "hono/accepts"
+import authMiddleware from "../middleware/auth.js"
 
 const authRoutes = new Hono()
 

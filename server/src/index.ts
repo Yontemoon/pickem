@@ -3,6 +3,9 @@ import { Hono } from "hono"
 import { getSupabase, supabaseMiddleware } from "../supabase/supabase.js"
 import { cors } from "hono/cors"
 import authRoutes from "./routes/auth.js"
+import { getCookie } from "hono/cookie"
+import authMiddleware from "./middleware/auth.js"
+import picksHono from "./routes/pick.js"
 
 const app = new Hono()
 app.use("*", supabaseMiddleware())
@@ -18,6 +21,7 @@ app.use(
 )
 
 app.route("/auth", authRoutes)
+app.route("/picks", picksHono)
 
 app.get("/", (c) => {
   return c.text("Hello Hono!")
@@ -46,6 +50,10 @@ app.get("/events/upcoming", async (c) => {
 app.get("/event/:id", async (c) => {
   try {
     const id = Number(c.req.param("id"))
+    if (!id) {
+      return c.json({ error: "No Id" })
+    }
+
     const supabase = getSupabase(c)
 
     const { data, error } = await supabase
@@ -70,7 +78,9 @@ app.get("/event/:id", async (c) => {
 })
 
 // Picks based on user
-app.get("/picks", async (c) => {})
+app.get("/picks", authMiddleware, async (c) => {
+  return c.json({ works: "yay" })
+})
 
 app.post("/pick", async (c) => {})
 
