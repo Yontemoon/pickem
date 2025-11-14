@@ -23,7 +23,7 @@ const authMiddleware = async (c: Context, next: Next) => {
     const { data, error } = await supabase.auth.refreshSession({
       refresh_token: refreshToken,
     })
-    console.log(data)
+
     const { session } = data
 
     if (!session || error) {
