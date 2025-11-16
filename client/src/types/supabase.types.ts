@@ -12,4 +12,12 @@ type TFight = {
   }[]
 }
 
-export type { TFight }
+type TPicks = {
+  id: number
+  fight_id: number
+  fighter_id: number
+  user_id: string
+  created_at: string
+}
+
+export type { TFight, TPicks }
