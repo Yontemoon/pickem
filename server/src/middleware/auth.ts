@@ -36,7 +36,7 @@ const authMiddleware = async (c: Context, next: Next) => {
         httpOnly: true,
         secure: isProd,
         sameSite: isProd ? "none" : "lax",
-        domain: isProd ? ".railway.app" : undefined,
+        domain: isProd ? ".monteyoon.com" : undefined,
         path: "/",
         maxAge: 60 * 60, // 1 hour
         partitioned: isProd ? true : false,

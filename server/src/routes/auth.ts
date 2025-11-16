@@ -28,7 +28,7 @@ authRoutes.post("/login", async (c) => {
     httpOnly: true,
     secure: isProd,
     sameSite: isProd ? "none" : "lax",
-    domain: isProd ? ".railway.app" : undefined,
+    domain: isProd ? ".monteyoon.com" : undefined,
     path: "/",
     maxAge: 60 * 60, // 1 hour
     // partitioned: isProd ? true : false,
@@ -39,7 +39,7 @@ authRoutes.post("/login", async (c) => {
     secure: process.env.NODE_ENV === "production",
     sameSite: isProd ? "none" : "lax",
     path: "/",
-    domain: isProd ? ".railway.app" : undefined,
+    domain: isProd ? ".monteyoon.com" : undefined,
     maxAge: 60 * 60 * 24 * 7, // 1 week
     // partitioned: isProd ? true : false,
   })
