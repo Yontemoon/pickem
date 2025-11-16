@@ -16,6 +16,6 @@ export default defineConfig({
     },
   },
   preview: {
-    allowedHosts: [".railway.app"],
+    allowedHosts: [".monteyoon.com"],
   },
 })
