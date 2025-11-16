@@ -1,8 +1,8 @@
 import { Hono } from "hono"
 import supabase from "../../lib/supabase.js"
 import { setCookie, deleteCookie } from "hono/cookie"
-import { accepts } from "hono/accepts"
-import authMiddleware from "../middleware/auth.js"
+// import { accepts } from "hono/accepts"
+// import authMiddleware from "../middleware/auth.js"
 
 const authRoutes = new Hono()
 
@@ -14,18 +14,20 @@ authRoutes.post("/login", async (c) => {
     email,
     password,
   })
+  console.log(data)
 
   if (error) {
     return c.json({ error: error.message }, 401)
   }
 
   const { session } = data
+  const isProd = process.env.NODE_ENV === "production"
 
   // Set access + refresh tokens as cookies
   setCookie(c, "sb-access-token", session.access_token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "Lax",
+    secure: isProd,
+    sameSite: isProd ? "none" : "lax",
     path: "/",
     maxAge: 60 * 60, // 1 hour
   })
@@ -33,7 +35,7 @@ authRoutes.post("/login", async (c) => {
   setCookie(c, "sb-refresh-token", session.refresh_token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "Lax",
+    sameSite: isProd ? "none" : "lax",
     path: "/",
     maxAge: 60 * 60 * 24 * 7, // 1 week
   })

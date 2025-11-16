@@ -20,12 +20,12 @@ app.use(
   })
 )
 
-app.route("/auth", authRoutes)
-app.route("/picks", picksHono)
-
 app.get("/", (c) => {
   return c.text("Hello Hono!")
 })
+
+app.route("/auth", authRoutes)
+app.route("/picks", picksHono)
 
 app.get("/events/upcoming", async (c) => {
   try {
@@ -76,13 +76,6 @@ app.get("/event/:id", async (c) => {
     })
   }
 })
-
-// Picks based on user
-app.get("/picks", authMiddleware, async (c) => {
-  return c.json({ works: "yay" })
-})
-
-app.post("/pick", async (c) => {})
 
 serve(
   {
