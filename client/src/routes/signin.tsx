@@ -16,8 +16,6 @@ function RouteComponent() {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
-    console.log(email)
-    console.log(password)
 
     const res = await fetch(`${CLIENT_URL}/auth/login`, {
       method: "POST",

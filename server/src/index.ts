@@ -12,10 +12,7 @@ app.use("*", supabaseMiddleware())
 app.use(
   "*",
   cors({
-    origin: [
-      "http://localhost:3000",
-      "https://pickem-production.up.railway.app",
-    ],
+    origin: ["http://localhost:3000", "https://pickem.monteyoon.com"],
     credentials: true,
   })
 )
