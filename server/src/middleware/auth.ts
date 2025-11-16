@@ -31,12 +31,15 @@ const authMiddleware = async (c: Context, next: Next) => {
     }
 
     if (session) {
+      const isProd = process.env.NODE_ENV === "production"
       setCookie(c, "sb-access-token", session.access_token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "Lax",
+        secure: isProd,
+        sameSite: isProd ? "none" : "lax",
+        domain: isProd ? ".railway.app" : undefined,
         path: "/",
         maxAge: 60 * 60, // 1 hour
+        partitioned: isProd ? true : false,
       })
     }
   }
