@@ -27,21 +27,21 @@ authRoutes.post("/login", async (c) => {
   setCookie(c, "sb-access-token", session.access_token, {
     httpOnly: true,
     secure: isProd,
-    sameSite: isProd ? "none" : "lax",
+    sameSite: "lax",
     domain: isProd ? ".railway.app" : undefined,
     path: "/",
     maxAge: 60 * 60, // 1 hour
-    partitioned: isProd ? true : false,
+    // partitioned: isProd ? true : false,
   })
 
   setCookie(c, "sb-refresh-token", session.refresh_token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: isProd ? "none" : "lax",
+    sameSite: "lax",
     path: "/",
     domain: isProd ? ".railway.app" : undefined,
     maxAge: 60 * 60 * 24 * 7, // 1 week
-    partitioned: isProd ? true : false,
+    // partitioned: isProd ? true : false,
   })
 
   return c.json({ user: session.user })
