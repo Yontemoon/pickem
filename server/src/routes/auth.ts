@@ -30,6 +30,7 @@ authRoutes.post("/login", async (c) => {
     sameSite: isProd ? "none" : "lax",
     path: "/",
     maxAge: 60 * 60, // 1 hour
+    partitioned: isProd ? true : false,
   })
 
   setCookie(c, "sb-refresh-token", session.refresh_token, {
@@ -38,6 +39,7 @@ authRoutes.post("/login", async (c) => {
     sameSite: isProd ? "none" : "lax",
     path: "/",
     maxAge: 60 * 60 * 24 * 7, // 1 week
+    partitioned: isProd ? true : false,
   })
 
   return c.json({ user: session.user })
