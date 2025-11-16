@@ -1,6 +1,6 @@
 // import React from "react"
 import { createFileRoute } from "@tanstack/react-router"
-import { useQuery, useQueryClient } from "@tanstack/react-query"
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query"
 import { CLIENT_URL } from "@/lib/constants"
 import { Link } from "@tanstack/react-router"
 import { z } from "zod"
@@ -10,6 +10,11 @@ import { Button } from "@/components/ui/button"
 const ZSearchParamSchema = z.object({
   event: z.number().optional(),
 })
+
+type TUserPick = {
+  fight_id: number
+  fighter_id: number
+}
 
 export const Route = createFileRoute("/")({
   component: App,
@@ -55,11 +60,9 @@ function App() {
     },
   })
 
-  const {
-    data: picks,
-    // error: picksError,
-    isLoading: picksLoading,
-  } = useQuery<TPicks[]>({
+  console.log(eventData)
+
+  const { data: picks } = useQuery<TPicks[]>({
     queryFn: async () => {
       const resTest = await fetch(`${import.meta.env.VITE_API_URL}/picks`, {
         credentials: "include",
@@ -79,14 +82,12 @@ function App() {
 
       return { ...fighter, isPicked: foundPick }
     })
-    return { ...fight, modifiedFights }
+    return { ...fight, fight_info: modifiedFights }
   })
 
-  console.log(reformattedData)
-
-  const handleClick = async (fighter_id: number, fight_id: number) => {
+  const updatePicks = async (fighter_id: number, fight_id: number) => {
     try {
-      await fetch(`${import.meta.env.VITE_API_URL}/picks`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/picks`, {
         method: "POST",
         credentials: "include",
         body: JSON.stringify({
@@ -94,12 +95,49 @@ function App() {
           fight_id,
         }),
       })
-
-      queryClient.invalidateQueries({
-        queryKey: ["user-picks"],
-      })
-    } catch (err) {}
+      const updatePick = (await res.json()) as {
+        message: string
+        success: boolean
+      }
+      return updatePick.success
+    } catch (err) {
+      return false
+    }
   }
+  const { mutate } = useMutation<
+    { success: boolean },
+    { message: string; statusCode: number },
+    TUserPick
+  >({
+    mutationFn: async ({ fight_id, fighter_id }) => {
+      const res = (await updatePicks(fighter_id, fight_id)) as boolean
+      return { success: res }
+    },
+    onMutate: async (userPick) => {
+      await queryClient.cancelQueries({ queryKey: ["user-picks"] })
+      const prevPicks = queryClient.getQueryData(["user-picks"])
+
+      queryClient.setQueryData(["user-picks"], (old: TPicks[]) => {
+        const removedFight = old.filter(
+          (pick) => pick.fight_id !== userPick.fight_id
+        )
+
+        const prevPick = old.find((pick) => pick.fight_id === userPick.fight_id)
+        return [
+          ...removedFight,
+          { ...prevPick, fighter_id: userPick.fighter_id },
+        ]
+      })
+
+      return prevPicks
+    },
+    onError: (_err, _newPick, context) => {
+      queryClient.setQueryData(["user-picks"], context)
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["user-picks"] })
+    },
+  })
 
   return (
     <div className="text-center mx-10 px-2">
@@ -122,24 +160,31 @@ function App() {
       <div>
         {isPending && <div>Loading...</div>}
         <div className="grid">
-          {eventData?.map((event) => {
+          {reformattedData?.map((fight) => {
             return (
-              <div key={event.id} className="grid grid-cols-3 space-y-2">
+              <div key={fight.id} className="grid grid-cols-3 space-y-2">
                 <Button
-                  variant={"secondary"}
+                  variant={fight.fight_info[0].isPicked ? "third" : "default"}
                   onClick={() => {
-                    handleClick(event.fight_info[0].id, event.id)
+                    mutate({
+                      fight_id: fight.id,
+                      fighter_id: fight.fight_info[0].id,
+                    })
                   }}
                 >
-                  {event.fight_info[0].fighter.name}
+                  {fight.fight_info[0].fighter.name}
                 </Button>
-                <div>{event.bout_number}</div>
+                <div>{fight.bout_number}</div>
                 <Button
+                  variant={fight.fight_info[1].isPicked ? "third" : "secondary"}
                   onClick={() => {
-                    handleClick(event.fight_info[1].id, event.id)
+                    mutate({
+                      fight_id: fight.id,
+                      fighter_id: fight.fight_info[1].id,
+                    })
                   }}
                 >
-                  {event.fight_info[1].fighter.name}
+                  {fight.fight_info[1].fighter.name}
                 </Button>
               </div>
             )

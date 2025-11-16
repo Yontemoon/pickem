@@ -10,7 +10,6 @@ picksHono.get("/", authMiddleware, async (c) => {
   const token = getCookie(c, "sb-access-token")
   const { data: user } = await supabase.auth.getClaims(token)
 
-  // const { data, error } = await supabase.auth.getClaims(token)
   const { data, error } = await supabase
     .from("user_picks")
     .select("*")
@@ -21,6 +20,10 @@ picksHono.get("/", authMiddleware, async (c) => {
 
 picksHono.post("/", authMiddleware, async (c) => {
   const { fight_id, fighter_id } = await c.req.json()
+
+  if (!fight_id || !fighter_id) {
+    c.json({ success: false, message: "No fighter_id or fight_id" })
+  }
 
   const token = getCookie(c, "sb-access-token")
   const supabase = getSupabase(c)
@@ -41,10 +44,11 @@ picksHono.post("/", authMiddleware, async (c) => {
   )
 
   if (error) {
+    console.error(error)
     console.error("upsert error:", error.message)
-    return c.json({ success: false })
+    return c.json({ success: false, message: "upsert error occured." })
   }
 
-  return c.json({ success: true })
+  return c.json({ success: true, message: "Created new pick" })
 })
 export default picksHono
