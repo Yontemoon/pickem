@@ -36,7 +36,7 @@ authRoutes.post("/login", async (c) => {
 
   setCookie(c, "sb-refresh-token", session.refresh_token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: isProd,
     sameSite: isProd ? "none" : "lax",
     path: "/",
     domain: isProd ? ".monteyoon.com" : undefined,

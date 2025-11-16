@@ -39,7 +39,6 @@ const authMiddleware = async (c: Context, next: Next) => {
         domain: isProd ? ".monteyoon.com" : undefined,
         path: "/",
         maxAge: 60 * 60, // 1 hour
-        partitioned: isProd ? true : false,
       })
     }
   }
