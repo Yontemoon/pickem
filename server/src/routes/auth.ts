@@ -1,6 +1,8 @@
 import { Hono } from "hono"
 import supabase from "../../lib/supabase.js"
-import { setCookie, deleteCookie } from "hono/cookie"
+import { setCookie, deleteCookie, getCookie } from "hono/cookie"
+import authMiddleware from "../middleware/auth.js"
+import { getSupabase } from "../../supabase/supabase.js"
 // import { accepts } from "hono/accepts"
 // import authMiddleware from "../middleware/auth.js"
 
@@ -95,7 +97,26 @@ authRoutes.post("/signout", async (c) => {
     return c.json({ success: true })
   } catch (error) {
     console.error("Error signing out", error)
-    c.json({ succes: false })
+    c.json({ success: false })
+  }
+})
+
+authRoutes.get("/user", authMiddleware, async (c) => {
+  try {
+    const token = getCookie(c, "sb-access-token")
+
+    const supabase = getSupabase(c)
+
+    const { data, error } = await supabase.auth.getClaims(token)
+
+    if (error) {
+      throw Error(error.message)
+    }
+
+    return c.json({ success: true, data: data?.claims })
+  } catch (error) {
+    console.error(error)
+    return c.json({ success: false, message: error })
   }
 })
 

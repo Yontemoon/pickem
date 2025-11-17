@@ -11,7 +11,8 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as SigninRouteImport } from './routes/signin'
-import { Route as AppRouteImport } from './routes/app'
+import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
+import { Route as AppRouteRouteImport } from './routes/app/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DemoTanstackQueryRouteImport } from './routes/demo/tanstack-query'
 import { Route as DemoTableRouteImport } from './routes/demo/table'
@@ -27,7 +28,11 @@ const SigninRoute = SigninRouteImport.update({
   path: '/signin',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AppRoute = AppRouteImport.update({
+const AuthenticatedRoute = AuthenticatedRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppRouteRoute = AppRouteRouteImport.update({
   id: '/app',
   path: '/app',
   getParentRoute: () => rootRouteImport,
@@ -55,7 +60,7 @@ const DemoFormAddressRoute = DemoFormAddressRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/app': typeof AppRoute
+  '/app': typeof AppRouteRoute
   '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
   '/demo/table': typeof DemoTableRoute
@@ -64,7 +69,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/app': typeof AppRoute
+  '/app': typeof AppRouteRoute
   '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
   '/demo/table': typeof DemoTableRoute
@@ -74,7 +79,8 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/app': typeof AppRoute
+  '/app': typeof AppRouteRoute
+  '/_authenticated': typeof AuthenticatedRoute
   '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
   '/demo/table': typeof DemoTableRoute
@@ -104,6 +110,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/app'
+    | '/_authenticated'
     | '/signin'
     | '/signup'
     | '/demo/table'
@@ -113,7 +120,8 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AppRoute: typeof AppRoute
+  AppRouteRoute: typeof AppRouteRoute
+  AuthenticatedRoute: typeof AuthenticatedRoute
   SigninRoute: typeof SigninRoute
   SignupRoute: typeof SignupRoute
   DemoTableRoute: typeof DemoTableRoute
@@ -137,11 +145,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SigninRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof AuthenticatedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/app': {
       id: '/app'
       path: '/app'
       fullPath: '/app'
-      preLoaderRoute: typeof AppRouteImport
+      preLoaderRoute: typeof AppRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -177,7 +192,8 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AppRoute: AppRoute,
+  AppRouteRoute: AppRouteRoute,
+  AuthenticatedRoute: AuthenticatedRoute,
   SigninRoute: SigninRoute,
   SignupRoute: SignupRoute,
   DemoTableRoute: DemoTableRoute,
