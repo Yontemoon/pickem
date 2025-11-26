@@ -1,10 +1,10 @@
 import { serve } from "@hono/node-server"
 import { Hono } from "hono"
-import { getSupabase, supabaseMiddleware } from "../supabase/supabase.js"
+import { supabaseMiddleware } from "../supabase/supabase.js"
 import { cors } from "hono/cors"
-import authRoutes from "@/routes/auth.js"
+import authRoutes from "./routes/auth.js"
 import picksHono from "./routes/pick.js"
-import eventRoutes from "@/routes/event.js"
+import eventRoutes from "./routes/event.js"
 
 const app = new Hono()
 app.use("*", supabaseMiddleware())

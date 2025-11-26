@@ -1,5 +1,5 @@
 import { Hono } from "hono"
-import { getSupabase } from "@/supabase.js"
+import { getSupabase } from "../../supabase/supabase.js"
 
 const eventRoutes = new Hono()
 
@@ -23,7 +23,7 @@ eventRoutes.get("/upcoming", async (c) => {
   }
 })
 
-eventRoutes.get("/:id", async (c) => {
+eventRoutes.get("/event/:id", async (c) => {
   try {
     const id = Number(c.req.param("id"))
     if (!id) {
