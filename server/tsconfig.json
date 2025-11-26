@@ -8,7 +8,10 @@
     "types": ["node"],
     "jsx": "react-jsx",
     "jsxImportSource": "hono/jsx",
-    "outDir": "dist"
+    "outDir": "dist",
+    "paths": {
+      "@/*": ["./src/*", "./supabase/*"]
+    }
   },
   "exclude": ["node_modules"]
 }

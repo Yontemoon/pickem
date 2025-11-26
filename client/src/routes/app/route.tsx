@@ -32,7 +32,7 @@ export const Route = createFileRoute("/app")({
   },
   async loader() {
     const response = await fetch(
-      `${import.meta.env.VITE_API_URL}/events/upcoming`,
+      `${import.meta.env.VITE_API_URL}/event/upcoming`,
     )
     const data = (await response.json()) as {
       data:
