@@ -16,9 +16,9 @@ authRoutes.post("/login", async (c) => {
     email,
     password,
   })
-  console.log(data)
 
   if (error) {
+    console.log(error)
     return c.json({ error: error.message }, 401)
   }
 
@@ -101,15 +101,20 @@ authRoutes.post("/signout", async (c) => {
   }
 })
 
-authRoutes.get("/user", authMiddleware, async (c) => {
+authRoutes.get("/user", async (c) => {
   try {
     const token = getCookie(c, "sb-access-token")
+
+    if (!token) {
+      return c.json({ success: true, data: null })
+    }
 
     const supabase = getSupabase(c)
 
     const { data, error } = await supabase.auth.getClaims(token)
 
     if (error) {
+      console.log(error)
       throw Error(error.message)
     }
 

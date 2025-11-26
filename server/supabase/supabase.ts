@@ -1,7 +1,7 @@
 import { createServerClient, parseCookieHeader } from "@supabase/ssr"
 import type { SupabaseClient } from "@supabase/supabase-js"
 import type { Context, MiddlewareHandler } from "hono"
-import { setCookie } from "hono/cookie"
+import { getCookie, setCookie } from "hono/cookie"
 import type { Database } from "./database.types.js"
 import "dotenv/config"
 
@@ -28,6 +28,7 @@ export const supabaseMiddleware = (): MiddlewareHandler => {
       throw new Error("SUPABASE_PUBLISHABLE_KEY missing!")
     }
 
+    const accessToken = getCookie(c, "sb-access-token")
     const supabase = createServerClient<Database>(
       supabaseUrl,
       supabaseAnonKey,
@@ -50,6 +51,11 @@ export const supabaseMiddleware = (): MiddlewareHandler => {
                     : options?.sameSite,
               })
             )
+          },
+        },
+        global: {
+          headers: {
+            ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
           },
         },
       }
