@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router"
 import { ThemeToggle } from "./theme-toggle"
 import { useAuth } from "@/providers/auth"
 
-export default function Header() {
+const Header = () => {
   const { isAuthenticated } = useAuth()
 
   return (
@@ -20,3 +20,5 @@ export default function Header() {
     </>
   )
 }
+
+export default Header
