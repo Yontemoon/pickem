@@ -26,7 +26,7 @@ if (rootElement && !rootElement.innerHTML) {
           <App />
         </ThemeProvider>
       </TanStackQueryProvider.Provider>
-    </StrictMode>
+    </StrictMode>,
   )
 }
 

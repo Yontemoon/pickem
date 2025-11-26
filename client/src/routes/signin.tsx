@@ -1,33 +1,34 @@
 import React from "react"
-import { createFileRoute } from "@tanstack/react-router"
+import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import type { FormEvent } from "react"
-import { CLIENT_URL } from "@/lib/constants"
 
 export const Route = createFileRoute("/signin")({
   component: RouteComponent,
+  beforeLoad({ context }) {
+    const isAuth = context.auth.isAuthenticated
+
+    if (isAuth) {
+      throw redirect({
+        to: "/app",
+      })
+    }
+  },
 })
 
 function RouteComponent() {
+  const { auth } = Route.useRouteContext()
+  const navigate = useNavigate()
+
   const [email, setEmail] = React.useState("")
   const [password, setPassword] = React.useState("")
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
-
-    const res = await fetch(`${CLIENT_URL}/auth/login`, {
-      method: "POST",
-      body: JSON.stringify({
-        email: email,
-        password: password,
-      }),
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-    })
-    const data = await res.json()
-    console.log(data)
+    await auth.login(email, password)
+    navigate({ to: "/app" })
   }
 
   return (

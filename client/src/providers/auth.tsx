@@ -27,15 +27,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const res = await fetch(`${CLIENT_URL}/auth/user`, {
         credentials: "include",
       })
-      const data = await res.json()
+      const { data } = await res.json()
+      console.log(data)
       if (data) {
-        // Validate token with your API
-        console.log(data)
-        setUser(data.data)
+        setUser(data)
         setIsAuthenticated(true)
-
-        setIsLoading(false)
       }
+
+      setIsLoading(false)
     }
     getData()
   }, [])
@@ -49,20 +48,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     )
   }
 
-  const login = async (username: string, password: string) => {
+  const login = async (email: string, password: string) => {
     // Replace with your authentication logic
-    const response = await fetch("/api/login", {
+    const response = await fetch(`${CLIENT_URL}/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password }),
+      body: JSON.stringify({ email, password }),
+      credentials: "include",
     })
 
     if (response.ok) {
       const userData = await response.json()
-      setUser(userData)
+      console.log(userData)
+      setUser(userData.user)
       setIsAuthenticated(true)
-      // Store token for persistence
-      localStorage.setItem("auth-token", userData.token)
     } else {
       throw new Error("Authentication failed")
     }
@@ -71,7 +70,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = () => {
     setUser(null)
     setIsAuthenticated(false)
-    localStorage.removeItem("auth-token")
   }
 
   return (
