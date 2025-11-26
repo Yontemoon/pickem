@@ -1,10 +1,7 @@
 import { Hono } from "hono"
 import supabase from "../../lib/supabase.js"
 import { setCookie, deleteCookie, getCookie } from "hono/cookie"
-import authMiddleware from "../middleware/auth.js"
 import { getSupabase } from "../../supabase/supabase.js"
-// import { accepts } from "hono/accepts"
-// import authMiddleware from "../middleware/auth.js"
 
 const authRoutes = new Hono()
 
