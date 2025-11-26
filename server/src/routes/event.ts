@@ -23,7 +23,7 @@ eventRoutes.get("/upcoming", async (c) => {
   }
 })
 
-eventRoutes.get("/event/:id", async (c) => {
+eventRoutes.get("/:id", async (c) => {
   try {
     const id = Number(c.req.param("id"))
     if (!id) {
