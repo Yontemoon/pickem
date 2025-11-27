@@ -1,4 +1,4 @@
-import { Link, redirect } from "@tanstack/react-router"
+import { Link, useNavigate } from "@tanstack/react-router"
 import { useAuth } from "@/providers/auth"
 import {
   Cloud,
@@ -31,6 +31,7 @@ import { useTheme } from "@/providers/theme"
 const Header = () => {
   const { isAuthenticated, logout } = useAuth()
   const { setTheme } = useTheme()
+  const navigate = useNavigate()
 
   return (
     <header className="p-4 flex items-center bg-gray-800 text-white shadow-lg justify-between">
@@ -106,9 +107,11 @@ const Header = () => {
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem
-            onClick={() => {
-              logout()
-              redirect({ to: "/signin" })
+            onClick={async () => {
+              await logout()
+              navigate({
+                to: "/",
+              })
             }}
           >
             <LogOut />

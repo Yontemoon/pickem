@@ -5,13 +5,7 @@ import Header from "../components/Header"
 
 import TanStackQueryDevtools from "../integrations/tanstack-query/devtools"
 import type { QueryClient } from "@tanstack/react-query"
-
-interface AuthState {
-  isAuthenticated: boolean
-  user: { id: string; username: string; email: string } | null
-  login: (email: string, password: string) => Promise<void>
-  logout: () => void
-}
+import type { AuthState } from "@/providers/auth"
 
 interface MyRouterContext {
   queryClient: QueryClient

@@ -44,9 +44,11 @@ function RouteComponent() {
     onSubmit: async ({ value }) => {
       console.log(value)
       const res = await auth.login(value.email, value.password)
-      navigate({
-        to: "/app",
-      })
+      if (res.success) {
+        navigate({
+          to: "/app",
+        })
+      }
     },
   })
 

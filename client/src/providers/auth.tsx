@@ -3,11 +3,14 @@ import { CLIENT_URL } from "@/lib/constants"
 import { postLogin, postSignout } from "@/lib/fetch"
 import type { User } from "@/lib/fetch"
 
-interface AuthState {
+export interface AuthState {
   isAuthenticated: boolean
   user: User | null
-  login: (username: string, password: string) => Promise<void>
-  logout: () => void
+  login: (
+    username: string,
+    password: string,
+  ) => Promise<{ success: boolean; message: string | null }>
+  logout: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthState | undefined>(undefined)
@@ -58,8 +61,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (!res.error) {
       setUser(res.user)
       setIsAuthenticated(true)
+      return { success: true, message: null }
     } else {
-      throw new Error("Authentication failed")
+      console.error("Authentication failed")
+      return { success: false, message: res.error }
     }
   }
 
