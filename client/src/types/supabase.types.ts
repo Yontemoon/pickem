@@ -12,7 +12,7 @@ type TFight = {
   }[]
 }
 
-type TPicks = {
+type TPick = {
   id: number
   fight_id: number
   fighter_id: number
@@ -20,4 +20,10 @@ type TPicks = {
   created_at: string
 }
 
-export type { TFight, TPicks }
+type TEvent = {
+  id: number
+  created_at: string
+  event_title: string
+  date: string
+}
+export type { TFight, TPick, TEvent }

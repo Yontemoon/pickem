@@ -59,7 +59,7 @@ async function main() {
     console.group(`Found ${eventsData.length} bouts`)
 
     if (eventsData.length >= 20) {
-      console.warn("Fitlering did not work...")
+      console.warn("Filtering did not work...")
       console.warn("Ending script.")
       throw Error("Filtering just UFC did not work")
     }
