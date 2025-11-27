@@ -1,11 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react"
 import { CLIENT_URL } from "@/lib/constants"
-
-interface User {
-  id: string
-  username: string
-  email: string
-}
+import { postLogin, postSignout } from "@/lib/fetch"
+import type { User } from "@/lib/fetch"
 
 interface AuthState {
   isAuthenticated: boolean
@@ -24,17 +20,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Restore auth state on app load
   useEffect(() => {
     const getData = async () => {
-      const res = await fetch(`${CLIENT_URL}/auth/user`, {
-        credentials: "include",
-      })
-      const { data } = await res.json()
-      console.log(data)
-      if (data) {
-        setUser(data)
-        setIsAuthenticated(true)
-      }
+      try {
+        const res = await fetch(`${CLIENT_URL}/auth/user`, {
+          credentials: "include",
+        })
 
-      setIsLoading(false)
+        if (!res.ok) {
+          throw Error("Error getting user")
+        }
+        const { data } = await res.json()
+        console.log(data)
+        if (data) {
+          setUser(data)
+          setIsAuthenticated(true)
+        }
+      } catch (error) {
+        console.error("No user")
+      } finally {
+        setIsLoading(false)
+      }
     }
     getData()
   }, [])
@@ -49,27 +53,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const login = async (email: string, password: string) => {
-    // Replace with your authentication logic
-    const response = await fetch(`${CLIENT_URL}/auth/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-      credentials: "include",
-    })
+    const res = await postLogin(email, password)
 
-    if (response.ok) {
-      const userData = await response.json()
-      console.log(userData)
-      setUser(userData.user)
+    if (!res.error) {
+      setUser(res.user)
       setIsAuthenticated(true)
     } else {
       throw new Error("Authentication failed")
     }
   }
 
-  const logout = () => {
-    setUser(null)
-    setIsAuthenticated(false)
+  const logout = async () => {
+    const res = await postSignout()
+
+    if (res.success) {
+      setUser(null)
+      setIsAuthenticated(false)
+    }
   }
 
   return (

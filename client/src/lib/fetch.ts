@@ -11,6 +11,36 @@ type MutationResponse = {
   message: string | null
 }
 
+export type User = {
+  iss: string
+  sub: string
+  aud: string
+  exp: number
+  iat: number
+  email: string
+  phone: string
+  app_metadata: {
+    provider: "email"
+    providers: ["email"]
+  }
+  user_metadata: {
+    email: string
+    email_verified: true
+    phone_verified: false
+    sub: string
+  }
+  role: string
+  aal: string
+  amr: [
+    {
+      method: "password"
+      timestamp: number
+    },
+  ]
+  session_id: string
+  is_anonymous: false
+}
+
 const defaultFetchOptions: RequestInit = {
   credentials: "include",
 }
@@ -61,4 +91,36 @@ const postPick = async (
   return updatePick
 }
 
-export { getUpcomingEvents, getPick, getEvent, postPick }
+const postLogin = async (email: string, password: string) => {
+  const response = await fetch(`${CLIENT_URL}/auth/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password }),
+    credentials: "include",
+  })
+  const data = (await response.json()) as {
+    user: User | null
+    error: string | null
+  }
+  return data
+}
+
+const postSignout = async () => {
+  const response = await fetch(`${CLIENT_URL}/auth/logout`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+  })
+
+  const data = (await response.json()) as MutationResponse
+  return data
+}
+
+export {
+  getUpcomingEvents,
+  getPick,
+  getEvent,
+  postPick,
+  postSignout,
+  postLogin,
+}

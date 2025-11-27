@@ -2,6 +2,7 @@ import { Hono } from "hono"
 import supabase from "../../lib/supabase.js"
 import { setCookie, deleteCookie, getCookie } from "hono/cookie"
 import { getSupabase } from "../../supabase/supabase.js"
+import authMiddleware from "../middleware/auth.js"
 
 const authRoutes = new Hono()
 
@@ -16,7 +17,7 @@ authRoutes.post("/login", async (c) => {
 
   if (error) {
     console.log(error)
-    return c.json({ error: error.message }, 401)
+    return c.json({ error: error.message, user: null }, 401)
   }
 
   const { session } = data
@@ -70,7 +71,7 @@ authRoutes.post("/signup", async (c) => {
       secure: process.env.NODE_ENV === "production",
       sameSite: "Lax",
       path: "/",
-      maxAge: 60 * 60 * 24,
+      maxAge: 60 * 60,
     })
 
     setCookie(c, "sb-refresh-token", session.refresh_token, {
@@ -80,25 +81,26 @@ authRoutes.post("/signup", async (c) => {
       path: "/",
       maxAge: 60 * 60 * 24 * 7, // 1 week
     })
-    return c.json({ user: data.user })
+
+    return c.json({ user: data.user, error: null })
   } catch (error) {
     console.error(error)
-    return c.json({ error: error })
+    return c.json({ error: error, user: null })
   }
 })
 
-authRoutes.post("/signout", async (c) => {
+authRoutes.post("/logout", async (c) => {
   try {
     deleteCookie(c, "sb-access-token")
     deleteCookie(c, "sb-refresh-token")
-    return c.json({ success: true })
+    return c.json({ success: true, error: null })
   } catch (error) {
     console.error("Error signing out", error)
-    c.json({ success: false })
+    c.json({ success: false, error: error })
   }
 })
 
-authRoutes.get("/user", async (c) => {
+authRoutes.get("/user", authMiddleware, async (c) => {
   try {
     const token = getCookie(c, "sb-access-token")
 
@@ -118,7 +120,7 @@ authRoutes.get("/user", async (c) => {
     return c.json({ error: null, data: data?.claims })
   } catch (error) {
     console.error(error)
-    return c.json({ data: false, error: error })
+    return c.json({ data: null, error: error })
   }
 })
 

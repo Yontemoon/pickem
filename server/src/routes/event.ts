@@ -6,11 +6,14 @@ const eventRoutes = new Hono()
 eventRoutes.get("/upcoming", async (c) => {
   try {
     const supabase = getSupabase(c)
-
+    const date = new Date()
+    date.setDate(date.getDate() + 1)
+    const timestamp = date.toISOString()
     const { data, error } = await supabase
       .from("events")
       .select("*")
       .order("date")
+      .gt("date", timestamp)
 
     if (error) {
       console.error("GET [/events/upcoming]: ", error.message)

@@ -9,7 +9,7 @@ import type { QueryClient } from "@tanstack/react-query"
 interface AuthState {
   isAuthenticated: boolean
   user: { id: string; username: string; email: string } | null
-  login: (username: string, password: string) => Promise<void>
+  login: (email: string, password: string) => Promise<void>
   logout: () => void
 }
 
