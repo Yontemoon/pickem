@@ -9,16 +9,23 @@ picksHono.get("/", async (c) => {
   const supabase = getSupabase(c)
 
   const token = getCookie(c, "sb-access-token")
-  console.log(token)
+
   const { data: user } = await supabase.auth.getClaims(token)
-  console.log(user)
 
   const { data, error } = await supabase
     .from("user_picks")
     .select("*")
     .eq("user_id", user?.claims.sub!)
 
-  return c.json(data)
+  if (error) {
+    console.error(error)
+    return c.json({
+      data: null,
+      error: error.message,
+    })
+  }
+
+  return c.json({ data, error: null })
 })
 
 picksHono.post("/", authMiddleware, async (c) => {

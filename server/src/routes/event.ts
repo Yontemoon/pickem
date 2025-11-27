@@ -27,7 +27,7 @@ eventRoutes.get("/:id", async (c) => {
   try {
     const id = Number(c.req.param("id"))
     if (!id) {
-      return c.json({ error: "No Id" })
+      return c.json({ error: "No Id", data: null })
     }
 
     const supabase = getSupabase(c)

@@ -70,7 +70,7 @@ authRoutes.post("/signup", async (c) => {
       secure: process.env.NODE_ENV === "production",
       sameSite: "Lax",
       path: "/",
-      maxAge: 60 * 60, // 1 hour
+      maxAge: 60 * 60 * 24,
     })
 
     setCookie(c, "sb-refresh-token", session.refresh_token, {
@@ -103,7 +103,7 @@ authRoutes.get("/user", async (c) => {
     const token = getCookie(c, "sb-access-token")
 
     if (!token) {
-      return c.json({ success: true, data: null })
+      return c.json({ error: "No token found", data: null })
     }
 
     const supabase = getSupabase(c)
@@ -115,10 +115,10 @@ authRoutes.get("/user", async (c) => {
       throw Error(error.message)
     }
 
-    return c.json({ success: true, data: data?.claims })
+    return c.json({ error: null, data: data?.claims })
   } catch (error) {
     console.error(error)
-    return c.json({ success: false, message: error })
+    return c.json({ data: false, error: error })
   }
 })
 
