@@ -1,14 +1,11 @@
-import { createFileRoute, redirect } from "@tanstack/react-router"
+import React from "react"
+import { createFileRoute, redirect, useRouter } from "@tanstack/react-router"
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query"
 import { Link } from "@tanstack/react-router"
-import { z } from "zod"
 import type { TPick } from "@/types/supabase.types"
 import { Button } from "@/components/ui/button"
 import { getUpcomingEvents, getPick, getEvent, postPick } from "@/lib/fetch"
-
-const ZSearchParamSchema = z.object({
-  event: z.number().optional(),
-})
+import { ZSearchParamAppSchema } from "@/lib/zod"
 
 type TUserPick = {
   fight_id: number
@@ -17,7 +14,7 @@ type TUserPick = {
 
 export const Route = createFileRoute("/app")({
   component: App,
-  validateSearch: ZSearchParamSchema,
+  validateSearch: ZSearchParamAppSchema,
   pendingComponent: () => <div className="text-center">Loading...</div>,
   staleTime: 120000,
   beforeLoad: async ({ context }) => {
@@ -37,6 +34,16 @@ export const Route = createFileRoute("/app")({
 function App() {
   const { data, error } = Route.useLoaderData()
   const params = Route.useSearch()
+  const navigate = Route.useNavigate()
+
+  React.useEffect(() => {
+    if (data && !params.event) {
+      navigate({
+        search: { event: data[0].id },
+      })
+    }
+  }, [])
+
   const queryClient = useQueryClient()
   const { data: eventData, isPending } = useQuery({
     queryKey: ["fights", params.event],
