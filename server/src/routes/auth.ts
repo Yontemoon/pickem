@@ -96,9 +96,22 @@ authRoutes.post("/signup", async (c) => {
 })
 
 authRoutes.post("/logout", authMiddleware, async (c) => {
+  const isProd = process.env.NODE_ENV === "production"
   try {
-    deleteCookie(c, "sb-access-token")
-    deleteCookie(c, "sb-refresh-token")
+    deleteCookie(c, "sb-access-token", {
+      httpOnly: true,
+      secure: isProd,
+      sameSite: isProd ? "none" : "lax",
+      path: "/",
+      domain: isProd ? ".monteyoon.com" : undefined,
+    })
+    deleteCookie(c, "sb-refresh-token", {
+      httpOnly: true,
+      secure: isProd,
+      sameSite: isProd ? "none" : "lax",
+      path: "/",
+      domain: isProd ? ".monteyoon.com" : undefined,
+    })
     return c.json({ success: true, error: null })
   } catch (error) {
     console.error("Error signing out", error)
