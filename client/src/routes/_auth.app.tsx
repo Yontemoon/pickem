@@ -4,12 +4,12 @@ import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query"
 import { Link } from "@tanstack/react-router"
 import type { TPick } from "@/types/supabase.types"
 import { Button } from "@/components/ui/button"
-import { getUpcomingEvents, getPick, getEvent, postPick } from "@/lib/fetch"
+import { getUpcomingEvents, getPick, postPick } from "@/lib/fetch"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ZSearchParamAppSchema } from "@/lib/zod"
 import { cn } from "@/lib/utils"
-import { CLIENT_URL } from "@/lib/constants"
+import { useFights } from "@/hooks/use-fights"
 
 type TUserPick = {
   fight_id: number
@@ -47,10 +47,8 @@ function App() {
     }
   }, [])
 
-  const { data: eventData, isPending } = useQuery({
-    queryKey: ["fights", params.event],
-    queryFn: async () => getEvent(params.event!),
-  })
+  const { data: eventData, isPending } = useFights(params.event!)
+  console.log(eventData)
 
   const { data: picks } = useQuery({
     queryKey: ["user-picks"],
@@ -63,7 +61,6 @@ function App() {
   const eventStart = currentEvent ? new Date(currentEvent.date) : null
 
   const [now, setNow] = React.useState(Date.now())
-  const [eventState, setEventState] = React.useState(null)
 
   React.useEffect(() => {
     const t = setInterval(() => setNow(Date.now()), 1000)
@@ -73,22 +70,6 @@ function App() {
   const fightDeadline = eventStart?.getTime() ?? 0
   const msLeft = fightDeadline - now
   const isLocked = msLeft <= 0
-  React.useEffect(() => {
-    if (!currentEvent?.id) {
-      return
-    }
-
-    const eventSource = new EventSource(
-      `${CLIENT_URL}/event/stream/${currentEvent.id}`,
-    )
-
-    eventSource.onmessage = (event) => {
-      const eventParsed = JSON.parse(event.data)
-      setEventState(eventParsed)
-    }
-    console.log("closing")
-    return () => eventSource.close()
-  }, [currentEvent, isLocked])
 
   const formatCountdown = (ms: number) => {
     if (ms <= 0) return "Event started"
@@ -219,8 +200,6 @@ function App() {
             </Card>
           )
         })}
-
-        {eventState && <div id="test">{JSON.stringify(eventState)}</div>}
       </div>
     </div>
   )

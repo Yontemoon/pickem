@@ -135,7 +135,10 @@ eventRoutes.get("/stream/:id", async (c) => {
     // Then write the loop
     while (true) {
       await stream.writeSSE({
-        data: JSON.stringify(eventCache.get(id) ?? null),
+        data: JSON.stringify({
+          data: eventCache.get(id),
+          error: null,
+        }),
       })
 
       await stream.sleep(5000)
