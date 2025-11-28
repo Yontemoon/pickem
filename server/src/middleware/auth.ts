@@ -13,7 +13,7 @@ const authMiddleware = async (c: Context, next: Next) => {
   const supabase = getSupabase(c)
 
   const { data, error } = await supabase.auth.getClaims(token)
-  console.log({ data })
+
   if (error) {
     console.error(error)
     return c.text("Something went wrong")
