@@ -39,7 +39,7 @@ eventRoutes.get("/:id", async (c) => {
 
     const { data, error } = await supabase
       .from("fights")
-      .select("*, fight_info(id, corner, fighter(name))")
+      .select("*, fight_info(id, corner, is_winner, fighter(name))")
       .eq("event_id", id)
       .order("bout_number")
     if (error) {
@@ -73,7 +73,7 @@ async function startPollingEvent(eventId: number, supabase: SupabaseClient) {
   const interval = setInterval(async () => {
     const { data } = await supabase
       .from("fights")
-      .select("*, fight_info(id, corner, fighter(name))")
+      .select("*, fight_info(id, corner, is_winner, fighter(name))")
       .eq("event_id", eventId)
       .order("bout_number")
 
@@ -110,7 +110,7 @@ eventRoutes.get("/stream/:id", async (c) => {
   // Initial fetch
   const { data } = await supabase
     .from("fights")
-    .select("*, fight_info(id, corner, fighter(name))")
+    .select("*, fight_info(id, corner, is_winner, fighter(name))")
     .eq("event_id", id)
     .order("bout_number")
 

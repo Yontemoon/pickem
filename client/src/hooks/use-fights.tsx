@@ -19,7 +19,6 @@ function useFights(eventId: number) {
   const queryClient = useQueryClient()
   const eventSourceRef = useRef<EventSource | null>(null)
 
-  // 1️⃣ React Query initial fetch + caching
   const query = useQuery({
     queryKey: ["fights", eventId],
     queryFn: () => getEvent(eventId),
@@ -27,7 +26,6 @@ function useFights(eventId: number) {
     refetchOnWindowFocus: false,
   })
 
-  // 2️⃣ SSE live stream (real-time updates)
   useEffect(() => {
     if (!eventId) return
 
@@ -40,7 +38,6 @@ function useFights(eventId: number) {
         const data = JSON.parse(ev.data) as TEventStreamPayload
         if (!data) return
 
-        // 🔥 Push live updates into React Query cache
         queryClient.setQueryData(["fights", eventId], data)
       } catch (err) {
         console.error("SSE parse error", err)

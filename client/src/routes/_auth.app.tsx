@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ZSearchParamAppSchema } from "@/lib/zod"
 import { cn } from "@/lib/utils"
 import { useFights } from "@/hooks/use-fights"
+import { useTimer } from "@/hooks/use-timer"
 
 type TUserPick = {
   fight_id: number
@@ -47,44 +48,17 @@ function App() {
     }
   }, [])
 
+  const currentEvent = data?.find((e) => e.id === params.event)
+
   const { data: eventData, isPending } = useFights(params.event!)
-  console.log(eventData)
+  const { isLocked, timeLeft } = useTimer(currentEvent?.date!)
 
   const { data: picks } = useQuery({
     queryKey: ["user-picks"],
     queryFn: async () => (await getPick()).data,
   })
-
   const pickIds = picks?.map((p) => p.fighter_id)
-  const currentEvent = data?.find((e) => e.id === params.event)
 
-  const eventStart = currentEvent ? new Date(currentEvent.date) : null
-
-  const [now, setNow] = React.useState(Date.now())
-
-  React.useEffect(() => {
-    const t = setInterval(() => setNow(Date.now()), 1000)
-    return () => clearInterval(t)
-  }, [])
-
-  const fightDeadline = eventStart?.getTime() ?? 0
-  const msLeft = fightDeadline - now
-  const isLocked = msLeft <= 0
-
-  const formatCountdown = (ms: number) => {
-    if (ms <= 0) return "Event started"
-
-    const days = Math.floor(ms / (1000 * 60 * 60 * 24))
-    const hours = Math.floor((ms / (1000 * 60 * 60)) % 24)
-    const minutes = Math.floor((ms / (1000 * 60)) % 60)
-    const seconds = Math.floor((ms / 1000) % 60)
-
-    if (days > 0) {
-      return `${days}d ${hours}h ${minutes}m ${seconds}s`
-    }
-
-    return `${hours}h ${minutes}m ${seconds}s`
-  }
   const reformattedData = eventData?.data?.map((fight) => {
     const modified = fight.fight_info?.map((f) => ({
       ...f,
@@ -148,7 +122,7 @@ function App() {
 
           <div className="inline-block mt-2 px-4 py-2 rounded bg-accent text-accent-foreground">
             <span className="font-semibold">Time left: </span>
-            {formatCountdown(eventStart!.getTime() - now)}
+            {timeLeft}
           </div>
         </div>
       )}
