@@ -38,7 +38,7 @@ const authMiddleware = async (c: Context, next: Next) => {
         sameSite: isProd ? "none" : "lax",
         domain: isProd ? ".monteyoon.com" : undefined,
         path: "/",
-        maxAge: 60 * 60 * 24,
+        maxAge: 60 * 60 * 24 * 7, // 1 week
       })
     }
   }
