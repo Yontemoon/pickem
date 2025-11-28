@@ -27,8 +27,18 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useTheme } from "@/providers/theme"
+import type { QueryClient } from "@tanstack/react-query"
+import type { TEvent } from "@/types/supabase.types"
+// import { useQueryClient } from "@tanstack/react-query"
 
-const Header = () => {
+type PropTypes = {
+  queryClient: QueryClient
+}
+
+const Header = ({ queryClient }: PropTypes) => {
+  // const queryClient = useQueryClient()
+  const data = queryClient.getQueryData(["events"]) as TEvent[]
+
   const { isAuthenticated, logout } = useAuth()
   const { setTheme } = useTheme()
   const navigate = useNavigate()
@@ -38,7 +48,12 @@ const Header = () => {
       <header className="p-4 flex items-center justify-between">
         <div className="flex items-center">
           <h1 className="ml-4 text-xl font-semibold">
-            <Link to={isAuthenticated ? "/app" : "/"}>
+            <Link
+              to={isAuthenticated ? "/app" : "/"}
+              search={{
+                event: data[0].id,
+              }}
+            >
               <div>Pick'Em</div>
             </Link>
           </h1>

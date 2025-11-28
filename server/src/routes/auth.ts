@@ -31,7 +31,7 @@ authRoutes.post("/login", async (c) => {
     sameSite: isProd ? "none" : "lax",
     domain: isProd ? ".monteyoon.com" : undefined,
     path: "/",
-    maxAge: 60 * 60,
+    maxAge: ONE_HOUR,
     // partitioned: isProd ? true : false,
   })
 
@@ -74,8 +74,7 @@ authRoutes.post("/signup", async (c) => {
       sameSite: isProd ? "none" : "lax",
       domain: isProd ? ".monteyoon.com" : undefined,
       path: "/",
-      maxAge: 60 * 60,
-      // partitioned: isProd ? true : false,
+      maxAge: ONE_HOUR,
     })
 
     setCookie(c, "sb-refresh-token", session.refresh_token, {
@@ -85,7 +84,6 @@ authRoutes.post("/signup", async (c) => {
       path: "/",
       domain: isProd ? ".monteyoon.com" : undefined,
       maxAge: ONE_WEEK,
-      // partitioned: isProd ? true : false,
     })
 
     return c.json({ user: data.user, error: null })

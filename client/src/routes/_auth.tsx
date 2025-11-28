@@ -6,9 +6,10 @@ export const Route = createFileRoute("/_auth")({
 })
 
 function RouteComponent() {
+  const { queryClient } = Route.useRouteContext()
   return (
     <div>
-      <Header />
+      <Header queryClient={queryClient} />
       <Outlet />
     </div>
   )

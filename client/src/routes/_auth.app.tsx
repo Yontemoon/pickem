@@ -30,8 +30,9 @@ export const Route = createFileRoute("/_auth/app")({
       })
     }
   },
-  async loader() {
+  async loader({ context }) {
     const res = await getUpcomingEvents()
+    context.queryClient.setQueryData(["events"], res.data)
     return res
   },
 })
@@ -87,7 +88,7 @@ function App() {
   })
 
   return (
-    <div>
+    <div className="">
       {error && <div>{JSON.stringify(error)}</div>}
 
       <ScrollArea className="flex items-center gap-3 overflow-x-auto ">
@@ -112,68 +113,72 @@ function App() {
       </ScrollArea>
       <div className="border" />
 
-      {/* EVENT HEADER */}
-      {currentEvent && (
-        <div className="text-center space-y-1">
-          <h1 className="text-2xl font-bold">{currentEvent.event_title}</h1>
-          <div className="text-muted-foreground">
-            {new Date(currentEvent.date).toLocaleString()}
-          </div>
+      <div className="max-w-3xl mx-auto px-4">
+        {/* EVENT HEADER */}
+        {currentEvent && (
+          <div className=" space-y-1  py-3">
+            <h1 className="text-2xl font-bold">{currentEvent.event_title}</h1>
+            <div className="text-muted-foreground">
+              {new Date(currentEvent.date).toLocaleString()}
+            </div>
 
-          <div className="inline-block mt-2 px-4 py-2 rounded bg-accent text-accent-foreground">
-            <span className="font-semibold">Time left: </span>
-            {timeLeft}
+            <div className="inline-blockrounded bg-accent text-accent-foreground">
+              <span className="font-semibold">Time left: </span>
+              {timeLeft}
+            </div>
           </div>
+        )}
+
+        {/* FIGHT CARDS */}
+        <div className="space-y-5">
+          {isPending && <div className="text-center">Loading...</div>}
+
+          {reformattedData?.map((fight) => {
+            return (
+              <Card key={fight.id} className="">
+                <CardHeader className="flex items-center justify-between mb-3">
+                  <CardTitle className=" ">Bout #{fight.bout_number}</CardTitle>
+                </CardHeader>
+
+                <CardContent className="grid grid-cols-3 items-center gap-4">
+                  <Button
+                    disabled={isLocked}
+                    variant={fight.fight_info[0].isPicked ? "third" : "default"}
+                    className="text-sm"
+                    onClick={() =>
+                      mutate({
+                        fight_id: fight.id,
+                        fighter_id: fight.fight_info[0].id,
+                      })
+                    }
+                  >
+                    {fight.fight_info[0].fighter.name}
+                  </Button>
+
+                  <div className="text-center text-muted-foreground text-sm">
+                    vs
+                  </div>
+
+                  <Button
+                    disabled={isLocked}
+                    variant={
+                      fight.fight_info[1].isPicked ? "third" : "secondary"
+                    }
+                    className="text-sm"
+                    onClick={() =>
+                      mutate({
+                        fight_id: fight.id,
+                        fighter_id: fight.fight_info[1].id,
+                      })
+                    }
+                  >
+                    {fight.fight_info[1].fighter.name}
+                  </Button>
+                </CardContent>
+              </Card>
+            )
+          })}
         </div>
-      )}
-
-      {/* FIGHT CARDS */}
-      <div className="space-y-5 max-w-3xl mx-auto px-4">
-        {isPending && <div className="text-center">Loading...</div>}
-
-        {reformattedData?.map((fight) => {
-          return (
-            <Card key={fight.id} className="">
-              <CardHeader className="flex items-center justify-between mb-3">
-                <CardTitle className=" ">Bout #{fight.bout_number}</CardTitle>
-              </CardHeader>
-
-              <CardContent className="grid grid-cols-3 items-center gap-4">
-                <Button
-                  disabled={isLocked}
-                  variant={fight.fight_info[0].isPicked ? "third" : "default"}
-                  className="text-sm"
-                  onClick={() =>
-                    mutate({
-                      fight_id: fight.id,
-                      fighter_id: fight.fight_info[0].id,
-                    })
-                  }
-                >
-                  {fight.fight_info[0].fighter.name}
-                </Button>
-
-                <div className="text-center text-muted-foreground text-sm">
-                  vs
-                </div>
-
-                <Button
-                  disabled={isLocked}
-                  variant={fight.fight_info[1].isPicked ? "third" : "secondary"}
-                  className="text-sm"
-                  onClick={() =>
-                    mutate({
-                      fight_id: fight.id,
-                      fighter_id: fight.fight_info[1].id,
-                    })
-                  }
-                >
-                  {fight.fight_info[1].fighter.name}
-                </Button>
-              </CardContent>
-            </Card>
-          )
-        })}
       </div>
     </div>
   )

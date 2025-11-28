@@ -54,7 +54,7 @@ function RouteComponent() {
 
   return (
     <div className="flex items-center justify-center">
-      <div className="flex justify-center container max-w-md w-full ">
+      <div className="flex justify-center container max-w-md w-full items-center h-[100svh] flex-col gap-5">
         <form
           className="space-y-2 w-full"
           onSubmit={(e) => {
@@ -63,6 +63,7 @@ function RouteComponent() {
             form.handleSubmit()
           }}
         >
+          <h1 className="w-full text-center">Log in to Pick'Em</h1>
           <div className="">
             <form.Field
               name="email"
@@ -111,6 +112,8 @@ function RouteComponent() {
             )}
           />
         </form>
+        <div className="border w-full" />
+        <Button className="w-full">Sign in With Google</Button>
       </div>
     </div>
   )

@@ -1,6 +1,7 @@
 import type { Context, Next } from "hono"
 import { getCookie, setCookie } from "hono/cookie"
 import { getSupabase } from "../../supabase/supabase.js"
+import { ONE_WEEK } from "../../lib/constants.js"
 
 const authMiddleware = async (c: Context, next: Next) => {
   const token = getCookie(c, "sb-access-token")
@@ -38,7 +39,7 @@ const authMiddleware = async (c: Context, next: Next) => {
         sameSite: isProd ? "none" : "lax",
         domain: isProd ? ".monteyoon.com" : undefined,
         path: "/",
-        maxAge: 60 * 60 * 24 * 7, // 1 week
+        maxAge: ONE_WEEK,
       })
     }
   }
