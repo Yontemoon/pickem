@@ -95,7 +95,7 @@ authRoutes.post("/signup", async (c) => {
   }
 })
 
-authRoutes.post("/logout", async (c) => {
+authRoutes.post("/logout", authMiddleware, async (c) => {
   try {
     deleteCookie(c, "sb-access-token")
     deleteCookie(c, "sb-refresh-token")
